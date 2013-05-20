@@ -1,0 +1,168 @@
+// JavaScript Document
+$(document).ready(function() {
+  fwidth(); 
+	fadd();
+	fopen();
+	fcheckbox();
+});
+$(window).resize(function(){
+	fwidth();
+});
+
+function fwidth() {
+	var c_width = $(".search_table_area").width();
+	var snum_tr = $(".search_table_area").find("tr").length;
+	//alert(snum_tr);
+	for(var i = 0 ;i < snum_tr; i++) {
+		$(".search_table_area").find("tr").eq(i).find("td").eq(1).css("width",(c_width -200 + "px"));	
+	}
+}
+
+
+var str_id01;
+var str_id02;
+function fopen() {//展开关闭搜索
+	$(".search_open_area").toggle(
+		function() {
+			$(".search_table_area").css("display","block");
+			
+			$(".seach_check_area").css("display","block");
+			$(".search_open_area a").html("");
+			$(".search_open_area a").html("关闭搜索");
+			
+		},
+		function() {
+			$(".search_table_area").css("display","none");
+			$(".seach_check_area").css("display","none");
+			$(".search_open_area a").html("");
+			$(".search_open_area a").html("展开搜索");
+		}
+	);
+}
+function fadd() {//选择数据
+	$(".search_table_area tr td ul li a").click(function() {
+		
+		var sa_text = $(this).html();
+		
+		if(sa_text == "多选") {
+			//$(this).css("display","none");
+			//$(this).parent("li").parent("ul").parent("td").parent("tr").find(".search_btn_area").css("display","block");
+			//$(this).parents(".search_table_area").find("tr").removeClass("tr03_area");
+			
+			//初始start
+			$(this).parents(".search_table_area").find("tr").removeClass("tr03_area");
+			$(this).parents(".search_table_area").find(".search_btn_area").css("display","none");
+			$(this).parents(".search_table_area").find(".tda03_area").css("display","block");
+			
+			var snum_checked = $(".search_table_area").find("input[type='checkbox']").length;
+			for(var i = 0; i < snum_checked; i++) {
+				var jq_input = $(".search_table_area").find("input[type='checkbox']");
+				$(".search_table_area").find("input[type='checkbox']").css("display","none");
+				if(jq_input.eq(i).prop("checked") == true) {
+					jq_input.eq(i).removeAttr("checked");
+				}
+			}
+			//初始end
+			$(this).css("display","none");
+			$(this).parent("li").parent("ul").parent("td").parent("tr").find(".search_btn_area").css("display","block");
+			
+			$(this).parent("li").parent("ul").parent("td").parent("tr").find(".search_btn_area").css("display","block");
+			
+			$(this).parent("li").parent("ul").parent("td").parent("tr").addClass("tr03_area");
+			var snum_li01 = $(this).parent("li").parent("ul").find("input[type='checkbox']").length;
+			for(var i = 0;i < snum_li01; i++) {
+				var jq_input = $(this).parent("li").parent("ul").find("input[type='checkbox']");
+				jq_input.eq(i).css("display","block");
+			}
+		}else {
+			$(this).parent("li").parent("ul").parent("td").parent("tr").removeClass().addClass("tr02_area");
+			str_id01 = $(this).parent("li").parent("ul").parent("td").parents("tr").attr("id");
+			$("#checked_id").append("<li><span class='checked01'><span class='checked01_con'>"+sa_text +"</span><span class='checked01_cls' sid="+ str_id01+"></span></span></li>");
+			$(".checked01_cls").click(function() {
+				var str_id02 = $(this).attr("sid");
+				
+				$(this).parent("span").parent("li").remove();
+				$(".search_table_area #" + str_id02).removeClass("tr02_area");
+			});
+		}
+		
+	});
+	
+}
+
+function fcheckbox() {//多选提交
+	$(".search_btn_area a").click(function() {
+		var sid = $(this).parent("div").parent("td").parent("tr").attr("id");
+		var snum_checked = $("#" + sid).find("input[type='checkbox']").length;
+		//alert(snum_checked);
+		var sflag = $(this).attr("sid");
+		if(sflag == "sub") {
+			var s_input = "";
+			var arr_input = new Array();
+			for(var i = 0; i < snum_checked; i++) {
+				var jq_input = $("#" + sid).find("input[type='checkbox']");
+				if(jq_input.eq(i).prop("checked") == true) {
+					s_input = s_input +$("#" + sid).find("input").eq(i).attr("value")  + ",";
+				}
+			}
+			arr_input = s_input.split(",");
+			var str_len = arr_input.length;
+			var s_else = "...";
+			if(str_len > 1) {
+				$("#" + sid).removeClass().addClass("tr02_area");
+				if(str_len < 4) {
+					$("#checked_id").append("<li><span class='checked01'><span class='checked01_con'>"+s_input +"</span><span class='checked01_cls' sid="+ sid +"></span></span></li>");
+					$("#" + sid).find("td").find("input").css("display","none");
+					$(this).parent(".search_btn_area").css("display","none");
+					$("#" + sid).find("td").find(".tdli_more_area").find("a").css("display","block");
+					$(".checked01_cls").click(function() {
+						var str_id02 = $(this).attr("sid");					
+						$(this).parent("span").parent("li").remove();
+						$(".search_table_area #" + str_id02).removeClass("tr02_area");
+						
+						var snum_checked = $("#" + str_id02).find("input[type='checkbox']").length;
+						for(var i = 0; i < snum_checked; i++) {
+							var jq_input = $("#" + str_id02).find("input[type='checkbox']");
+							if(jq_input.eq(i).prop("checked") == true) {
+								jq_input.eq(i).removeAttr("checked");
+							}
+						}
+						
+					});
+				} else {
+					$("#checked_id").append("<li><span class='checked01'><span class='checked01_con'>"+ arr_input[0]+ "," + arr_input[1]+ "," + arr_input[2] + "," + s_else +"</span><span class='checked01_cls' sid="+ sid +"></span></span></li>");	
+					$("#" + sid).find("td").find("input").css("display","none");
+					$(this).parent(".search_btn_area").css("display","none");
+					$("#" + sid).find("td").find(".tdli_more_area").find("a").css("display","block");
+					$(".checked01_cls").click(function() {
+						var str_id02 = $(this).attr("sid");
+						$(this).parent("span").parent("li").remove();
+						$(".search_table_area #" + str_id02).removeClass("tr02_area");
+						
+						var snum_checked = $("#" + str_id02).find("input[type='checkbox']").length;
+						for(var i = 0; i < snum_checked; i++) {
+							
+							var jq_input = $("#" + str_id02).find("input[type='checkbox']");
+							//alert(jq_input.eq(i).prop("checked"));
+							if(jq_input.eq(i).prop("checked") == true) {
+								jq_input.eq(i).removeAttr("checked");
+							}
+						}
+						
+					});
+				}	
+			} else {
+				alert("请选择数据");	
+			}
+		} else {
+			$("#" + sid).find("td").find("input").css("display","none");
+			$(this).parent(".search_btn_area").css("display","none");
+			$("#" + sid).find("td").find(".tdli_more_area").find("a").css("display","block");
+			$("#" + sid).removeClass("tr03_area");
+		}
+	});
+}
+
+
+
+
